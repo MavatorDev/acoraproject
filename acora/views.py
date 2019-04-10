@@ -1,3 +1,6 @@
 from django.shortcuts import render
+#crear vistas
 
-# Create your views here.
+def post_list(request):
+    return render(request, 'acora/post_list.html',{})
+
