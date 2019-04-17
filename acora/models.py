@@ -1,18 +1,19 @@
 from django.db import models
 from django.utils import timezone
+
 class Partida(models.Model):
-    codigo=models.charField(primary_key=True,max_length=20)
+    codigo=models.CharField(primary_key=True,max_length=20,default='0')
     estado=models.BooleanField(default=False)
-    temporizador=models.TimeField(default=time.now)
+    temporizador=models.TimeField(default='50:00')
 
 class Equipo(models.Model):
-    ide=models.CharField(primary_key=True,max_length=200)
-    nombre=models.CharField(unique=True)
+    cod=models.CharField(primary_key=True,max_length=20,default='0')
+    nombre=models.CharField(unique=True,max_length=200)
     puntaje=models.IntegerField(default=0)
-    idPista=models.CharField()
-    codigo=models.ForeignKey(Partida)
+    idPista=models.CharField(max_length=20,default='0')
+    codigo=models.ForeignKey(Partida,on_delete=models.CASCADE)
 
 class Ranking(models.Model):
-    idRanking=models.CharField()
-    codigo=models.ForeignKey(Partida)
+    idRanking=models.CharField(primary_key=True,max_length=200,default='0')
+    codigo=models.ForeignKey(Partida,on_delete=models.CASCADE)
     
