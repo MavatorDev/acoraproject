@@ -12,7 +12,7 @@ from .forms import PostAPuntaje
 
 
 
-def login(request):   
+def Clogin(request):   
   if request.method == "POST":
       form = PostCodigos(request.POST)
       if form.is_valid():
@@ -58,7 +58,7 @@ def iniciarPartida(request,pk):
         post = form.save(commit=False)
         
         post.save()
-        return HttpResponse("sidio")
+        return HttpResponse("empezar")
     else:
       form = PostLobby()
       return render(request, 'acora/iniciarPartida.html', {'form': form})
@@ -73,10 +73,32 @@ def actualizarPuntaje(request,foo):
         post.puntaje= Equipo.objects.get(nombre=foo).puntaje + int(request.POST['puntaje'])
         post.save()
         return HttpResponse("sidio")
-    else:
+    else: 
       form = PostLobby()
       return render(request, 'acora/actualizarPuntaje.html', {'form': form})
 
 def finalizarPartida(request,pk):
    u=Partida.objects.get(codigo=pk).delete()
    return HttpResponse("sidio")
+
+def getEquiposPartida(request,pk):
+ 
+   equipos= Equipo.objects.filter(codigo=pk).values_list('cod','nombre')
+   equipos=list(equipos)
+   return HttpResponse(equipos)
+
+def getTemporizador(request,pk):
+    get = get_object_or_404(Partida, codigo=pk)
+    return HttpResponse(get.temporizador)
+
+def getRanking(request,pk):
+ 
+   equipos= Equipo.objects.filter(codigo=pk).order_by('-puntaje').values_list('cod','nombre','puntaje')
+   equipos=list(equipos)
+   return HttpResponse(equipos)
+
+def login(request,foo):
+   if Codigos.objects.filter(cod=foo).exists():
+    return HttpResponse("aceptado")  
+   else:
+    return HttpResponse("fallo")
