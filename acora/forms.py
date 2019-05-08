@@ -3,6 +3,7 @@ from .models import Codigos
 from .models import Partida
 from .models import Equipo
 
+
 class PostCodigos(forms.ModelForm):
    
    class Meta:
