@@ -20,5 +20,6 @@ urlpatterns = [
         path('finalizarPartida/<int:pk>',finalizarPartida.as_view(), name='finalizarPartida'),
         path('getTemporizador/<int:pk>',getTemporizador.as_view(), name='getTemporizador'),
         path('getRanking/<int:pk>',getRanking.as_view(), name='getRanking'),
-      ]
+        path('CPartida/<int:pk>',CPartida.as_view(),name='CPartida'),
+        ]
 	

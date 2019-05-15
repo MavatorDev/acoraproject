@@ -65,7 +65,14 @@ class iniciarPartida(APIView):
       return Response("empezar")
      else:
       return Response("rechazado")
-      
+
+class CPartida(APIView):
+    def get(self,request,pk):
+        if (Partida.objects.filter(codigo=pk)).exists():
+            return Response("aceptado")
+        else:
+            return Response("rechazado")
+
 class actualizarPuntaje(APIView):
      
     def post(self,request,foo):
