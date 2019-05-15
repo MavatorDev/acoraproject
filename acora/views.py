@@ -16,19 +16,26 @@ from .serializers import PostCodigos
 
 class equiposPartida(APIView):
 
-    def get(self,request,pk):
-        equipos = Equipo.objects.filter(codigo=pk).values_list('cod','nombre')
+    def get(self,request,foo):
+        equipos = Equipo.objects.filter(codigo=foo).values_list('cod','nombre')
         equipos = list(equipos)
              
         return Response(equipos)
 
-    def post(self,request,pk):
+    def post(self,request,foo):
         serializer=PostcEquipo(data=request.data)
         if serializer.is_valid():
-           pk=get_object_or_404(Partida, codigo=pk)
-           serializer.save(codigo=pk)     
-           return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+           if Partida.objects.filter(codigo=foo).exists():
+               if Equipo.objects.filter(codigo=foo, nombre=request.data["nombre"]).exists():
+                   return Response("nombreExiste")
+               else:
+                  foo=get_object_or_404(Partida, codigo=foo)
+                  serializer.save(codigo=foo)  
+                  return Response("aceptado")
+           else: 
+            return Response("codigoFail")
+        else:
+            return Response("unknownFail")
 
 class crearPartida(APIView):
  
@@ -36,8 +43,9 @@ class crearPartida(APIView):
          serializer=sPartida(data=request.data)
          if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response("aceptado")
+         else:
+            return Response("unknownFail")
 
 class login(APIView):
      
@@ -58,17 +66,17 @@ class Clogin(APIView):
 
 class iniciarPartida(APIView):
 
-    def post(self,request,pk):
-     if (Partida.objects.filter(codigo=pk)).exists():
-      dato=get_object_or_404(Partida, codigo=pk)
+    def post(self,request,foo):
+     if (Partida.objects.filter(codigo=foo)).exists():
+      dato=get_object_or_404(Partida, codigo=foo)
       dato.temporizador=request.data
-      return Response("empezar")
+      return Response("aceptado")
      else:
       return Response("rechazado")
 
 class CPartida(APIView):
-    def get(self,request,pk):
-        if (Partida.objects.filter(codigo=pk)).exists():
+    def get(self,request,foo):
+        if (Partida.objects.filter(codigo=foo)).exists():
             return Response("aceptado")
         else:
             return Response("rechazado")
@@ -77,13 +85,13 @@ class actualizarPuntaje(APIView):
      
     def post(self,request,foo):
      
-     if (Equipo.objects.filter(nombre=foo)).exists():
-      dato=get_object_or_404(Equipo, nombre=foo)
+     if (Equipo.objects.filter(cod=foo)).exists():
+      dato=get_object_or_404(Equipo, cod=foo)
        
       serializer=PostAPuntaje(data=request.data,instance=dato)
       if serializer.is_valid():
              
-            serializer.save(puntaje=Equipo.objects.get(nombre=foo).puntaje + request.data["puntaje"])
+            serializer.save(puntaje= request.data["puntaje"])
       
             return Response("aceptado")
      else:
@@ -91,27 +99,27 @@ class actualizarPuntaje(APIView):
 
 class finalizarPartida(APIView):
    
-    def get(self,request,pk):
-     if (Partida.objects.filter(codigo=pk)).exists(): 
-      u=Partida.objects.get(codigo=pk).delete()
-      return Response("eliminado")
+    def get(self,request,foo):
+     if (Partida.objects.filter(codigo=foo)).exists(): 
+      u=Partida.objects.get(codigo=foo).delete()
+      return Response("aceptado")
      else:
       return Response("rechazado")
 
 class getTemporizador(APIView):
 
-    def get(self,request,pk):
-     if (Partida.objects.filter(codigo=pk)).exists(): 
-      dato=Partida.objects.get(codigo=pk).temporizador
+    def get(self,request,foo):
+     if (Partida.objects.filter(codigo=foo)).exists(): 
+      dato=Partida.objects.get(codigo=foo).temporizador
       return Response(dato)
      else:
       return Response("rechazado")
 
 class getRanking(APIView):
 
-    def get(self,request,pk):
-      if (Partida.objects.filter(codigo=pk)).exists():
-       equipos= Equipo.objects.filter(codigo=pk).order_by('-puntaje').values_list('cod','nombre','puntaje')
+    def get(self,request,foo):
+      if (Partida.objects.filter(codigo=foo)).exists():
+       equipos= Equipo.objects.filter(codigo=foo).order_by('-puntaje').values_list('cod','nombre','puntaje')
        equipos=list(equipos) 
        return Response(equipos)
       else:
