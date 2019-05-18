@@ -13,6 +13,22 @@ from .serializers import PostcEquipo
 from .serializers import PostIPartida
 from .serializers import PostAPuntaje
 from .serializers import PostCodigos
+from .serializers import sendEmail
+from django.core.mail import send_mail
+
+
+class send(APIView):
+   def post(self,request,foo):
+     if (Partida.objects.filter(codigo=foo)).exists():
+       
+       equipos= Equipo.objects.filter(codigo=foo).order_by('-puntaje').values_list('nombre','puntaje')
+       equiposs= str(equipos)
+       send_mail('Ranking carrera de observacion Acora', 'Estos son los resultados: \r\n ' + equiposs, 'manuevalencia99@gmail.com',[request.data["idRanking"]],fail_silently=False)
+       return Response("aceptado")
+     else:
+       return Response("rechazado")
+      
+       
 
 class equiposPartida(APIView):
 
@@ -66,13 +82,29 @@ class Clogin(APIView):
 
 class iniciarPartida(APIView):
 
-    def post(self,request,foo):
-     if (Partida.objects.filter(codigo=foo)).exists():
-      dato=get_object_or_404(Partida, codigo=foo)
-      dato.temporizador=request.data
+ def post(self,request,foo):
+   if (Partida.objects.filter(codigo=foo)).exists():
+    dato=get_object_or_404(Partida, codigo=foo)
+    serializer=PostIPartida(data=request.data,instance=dato)
+    if serializer.is_valid():
+      serializer.save(estado=request.data["estado"],temporizador=request.data["temporizador"])
       return Response("aceptado")
-     else:
+    else:
+      return Response("unknownData")
+   else:
       return Response("rechazado")
+
+class getEstado(APIView):
+
+    def get(self,request,foo):
+        if (Partida.objects.filter(codigo=foo)).exists():
+           dato=get_object_or_404(Partida, codigo=foo)
+           if dato.estado==1:
+               return Response("activo")
+           else:
+               return Response("inactivo")
+        else:
+            return Response("unknownCodigo")
 
 class CPartida(APIView):
     def get(self,request,foo):

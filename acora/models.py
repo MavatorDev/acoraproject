@@ -11,7 +11,7 @@ def getCod():
 
 class Equipo(models.Model):
     cod=models.CharField(primary_key=True,max_length=20,default='o0',blank=True)
-    nombre=models.CharField(unique=True,max_length=200,default='sinNombre')
+    nombre=models.CharField(max_length=200,default='sinNombre')
     puntaje=models.IntegerField(default=0)
     idPista=models.CharField(max_length=20,default='0')
     codigo=models.ForeignKey(Partida,on_delete=models.CASCADE)

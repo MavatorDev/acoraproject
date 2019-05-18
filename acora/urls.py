@@ -9,6 +9,8 @@ from .views import finalizarPartida
 from .views import getTemporizador
 from .views import getRanking
 from .views import CPartida
+from .views import getEstado
+from .views import send
 from django.http import HttpResponse
 
 urlpatterns = [ 
@@ -22,5 +24,7 @@ urlpatterns = [
         path('getTemporizador/<slug:foo>',getTemporizador.as_view(), name='getTemporizador'),
         path('getRanking/<slug:foo>',getRanking.as_view(), name='getRanking'),
         path('CPartida/<slug:foo>',CPartida.as_view(), name='CPartida'),
+        path('getEstado/<slug:foo>',getEstado.as_view(),name='getEstado'),
+        path('send/<slug:foo>',send.as_view(),name='send'),
         ]
 	
